@@ -47,7 +47,7 @@ DenavitHartenbergMatrix::DenavitHartenbergMatrix(float alpha, float a, float the
     this->a = a;
     this->d = d;
     this->theta = theta;
-    
+
     // create matrix, fill with zeros
     this->matrix = zeros<fmat>(4,4);
     
@@ -65,17 +65,18 @@ DenavitHartenbergMatrix::DenavitHartenbergMatrix(float alpha, float a, float the
  * 
  */
 void DenavitHartenbergMatrix::calcValue(){
-    
+     
     try{
         // update current values from joint
         if(this->joint != nullptr){
             this->theta = this->joint->getAngle();
             this->d = this->joint->getLength();
         }
+       
         
         // convert to radian
         float alpa_rad = alpha * M_PI / 180;
-        float theta_rad = theta * M_PI / 180;
+        float theta_rad = (theta + theta_offset) * M_PI / 180;
         
         // pre-calc values to avoid redundant calculation
         float cos_alpha = cos(alpa_rad);
@@ -97,7 +98,7 @@ void DenavitHartenbergMatrix::calcValue(){
     
         matrix.at(2,1) = sin_alpha;
         matrix.at(2,2) = cos_alpha;
-        matrix.at(2,3) = d;
+        matrix.at(2,3) = d + d_offset;
         
         matrix.at(3,3) = 1;
         
@@ -123,4 +124,28 @@ void DenavitHartenbergMatrix::test(){
   
     std::cout << A*B.t() << std::endl;
 
+}
+
+/**
+ * Sets the offset to the given value for the given variable.
+ * @param v
+ * @param offset_value
+ */
+void DenavitHartenbergMatrix::setOffset(OFFSET_VARIABLE v, float offset_value){
+    
+    switch(v){
+        
+        case OFFSET_VARIABLE::THETA : this->theta_offset = offset_value;
+        break;
+        
+        case OFFSET_VARIABLE::D :   this->d_offset = offset_value;
+        break;
+    
+    }
+
+}
+
+
+void DenavitHartenbergMatrix::assignToJoint(std::shared_ptr<RoboticArm::Joint> joint){
+    this->joint = joint;
 }

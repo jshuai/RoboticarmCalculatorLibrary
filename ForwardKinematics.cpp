@@ -66,21 +66,37 @@ void ForwardKinematics::calculateEffectorPosition(){
     ForwardKinematics& inst = ForwardKinematics::getInstance();
     unsigned int sleep_time = ((1.0/inst.calcFrequency)*1000);
     
+    std::cout << "Sleep time is " << sleep_time << " ms" << std::endl;
+    
     // refresh data
     while(true){
+        
+        
         for(DenavitHartenbergMatrix* m : inst.matrices){
             m->calcValue();
         }
         
+        std::cout << "DHT matrixes have been refreshed." << std::endl;
+        
         // refresh effector pos
         inst.refreshEffectorPosition();
         
+        std::cout << "Effector position refreshed." << std::endl;
+        
         // break if autorun disabled
-        if(inst.autorun == false)break;
+        if(inst.autorun == false){
+            std::cout << "Not in auto-run mode." << std::endl;
+            break;
+        }
+        
+        std::cout << "Auto-run enabled.. now we are goind to sleep." << std::endl;
         
         // autorun enabled, wait after iteration
-        this_thread::sleep_for(chrono::milliseconds(sleep_time));
+        if(inst.autorun)this_thread::sleep_for(chrono::milliseconds(sleep_time));
     }
+    
+    std::cout << "End of while." << std::endl;
+    
 }
 
 /**
@@ -88,16 +104,25 @@ void ForwardKinematics::calculateEffectorPosition(){
  */
 void ForwardKinematics::refreshEffectorPosition(){
     
-    ForwardKinematics& inst = ForwardKinematics::getInstance();
+    
+    
+    std::cout << "number of matrices: " << matrices.size() << std::endl;
     
     fmat* origin_matrix = matrices.front()->getMatrix();
+    
+    
+    std::cout << *origin_matrix;
+    
+    std::cout << "Starting iterative multiplication..." << std::endl;
     
     for(std::vector<DenavitHartenbergMatrix*>::iterator it = matrices.begin() + 1; it != matrices.end(); ++it){
        arma::fmat* temp = (*it)->getMatrix();
        *origin_matrix = *origin_matrix * *temp;
-       std::cout << *origin_matrix << std::endl;
-       std::cout << "------------------------------------------------------" << std::endl;
+       //std::cout << *origin_matrix << std::endl;
+       //std::cout << "------------------------------------------------------" << std::endl;
     }
+    
+    std::cout << "Matrix multiplication done." << std::endl;
     
     // update effector position
     // create vector
@@ -108,7 +133,6 @@ void ForwardKinematics::refreshEffectorPosition(){
     v.at(3,0) = 1;
    
     
-    this->effectorPosition =  *origin_matrix * v;
-    
-    
+    effectorPosition =  *origin_matrix * v;
+
 }

@@ -40,14 +40,20 @@ public:
     /* Returns the pointer to the current matrix with the current values */
     arma::fmat* getMatrix();
     
+    // Variables that handles offset
+    enum OFFSET_VARIABLE{THETA, D};
     
+    // Set offset for the given variable
+    void setOffset(OFFSET_VARIABLE v, float offset_value);
+
 private:
+
     
     /* Attached joint*/
     std::shared_ptr<RoboticArm::Joint> joint;
     
     /* Denavit-Hartenberg parameters */
-    float alpha, a, theta, d;
+    float alpha, a, theta, d, theta_offset = 0, d_offset = 0;
     
     /* The DHT result matrix */
     arma::fmat matrix;
