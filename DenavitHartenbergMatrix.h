@@ -56,7 +56,7 @@ private:
     float alpha, a, theta, d, theta_offset = 0, d_offset = 0;
     
     /* The DHT result matrix */
-    arma::fmat matrix;
+    arma::fmat matrix = arma::fmat(4,4);
     
     /* Default constructor is hidden */
     DenavitHartenbergMatrix();

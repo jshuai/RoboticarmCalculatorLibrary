@@ -48,6 +48,7 @@ public:
     /* Calculates the current position of the effector */
     static void calculateEffectorPosition();
     
+    void refreshEffectorPosition();
     
 
     void setRefreshRate(int hertz);
@@ -73,7 +74,7 @@ private:
     thread calcThread;
     
     
-    void refreshEffectorPosition();
+    
     
     
 
